@@ -1,8 +1,14 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-[AddComponentMenu("Camer-Control/MouselookScript")]
+[AddComponentMenu("Camera-Control/MouselookScript")]
 public class MouselookScript : MonoBehaviour {
+    private Quaternion originalRotation;
+    private Vector3 forward;
+
+    private float rotationX = 0f;
+    private float rotationY = 0f;
+
     public enum RotationAxes
     {
         MouseXAndY = 0,
@@ -16,12 +22,7 @@ public class MouselookScript : MonoBehaviour {
     public float minimumX = -360f;
     public float maximumX = 360f;
     public float minimumY = -60f;
-    public float maximumY = 60f;
-    float rotationX = 0f;
-    float rotationY = 0f;
-    Quaternion originalRotation;
-    float parentZ;
-    
+    public float maximumY = 60f;    
        
     // Use this for initialization
     void Start () {
@@ -29,7 +30,6 @@ public class MouselookScript : MonoBehaviour {
         {
             GetComponent<Rigidbody>().freezeRotation = true;
             originalRotation = transform.localRotation;
-            
         }
 
 	}
@@ -65,6 +65,15 @@ public class MouselookScript : MonoBehaviour {
         }
 	}
 
+    void FixedUpdate()
+    {
+        GetForwardVector();
+        if (Physics.Raycast(transform.position, forward, 10))
+            print("object in front");
+        else
+            print("n/a");
+    }
+
     public static float ClampAngle(float angle, float min, float max)
     {
         if (angle < -360f)
@@ -74,5 +83,10 @@ public class MouselookScript : MonoBehaviour {
             angle -= 360f;
         }
         return Mathf.Clamp(angle, min, max);
+    }
+
+    void GetForwardVector()
+    {
+        forward = transform.TransformDirection(Vector3.forward);
     }
 }
